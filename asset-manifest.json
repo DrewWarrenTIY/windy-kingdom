@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/windy-kingdom/static/css/main.c05954d0.css",
+    "main.js": "/windy-kingdom/static/js/main.acde1677.js",
+    "static/js/787.e20ec77e.chunk.js": "/windy-kingdom/static/js/787.e20ec77e.chunk.js",
+    "index.html": "/windy-kingdom/index.html",
+    "main.c05954d0.css.map": "/windy-kingdom/static/css/main.c05954d0.css.map",
+    "main.acde1677.js.map": "/windy-kingdom/static/js/main.acde1677.js.map",
+    "787.e20ec77e.chunk.js.map": "/windy-kingdom/static/js/787.e20ec77e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c05954d0.css",
+    "static/js/main.acde1677.js"
+  ]
+}
