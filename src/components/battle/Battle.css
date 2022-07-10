@@ -1,0 +1,9 @@
+.cell {
+    border: 1px solid black;
+}
+.moveable:hover {
+    border: 1px solid lightgreen;
+}
+.targetable {
+    background-color: lightcoral;
+}
