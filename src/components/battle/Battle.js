@@ -3,18 +3,27 @@ import './Battle.css'
 
 import { LEVELS } from '../../constants/levels'
 
+import { endTurn } from '../../utils/battle'
+import { getUnitNames } from '../../utils/units'
+
 export const Battle = (props) => {
     const styles = getStyles();
     const [currentLevel, setCurrentLevel] = useState(LEVELS.levelOne)
     const [gridSize, setGridSize] = useState([currentLevel.rows, currentLevel.columns])
-    const [playerCoords, setPlayerCoords] = useState(currentLevel.playerStart)
+    const [players, setPlayers] = useState(currentLevel.players)
     const [enemies, setEnemies] = useState(currentLevel.enemies)
     const [lastEnemyHit, setLastEnemyHit] = useState('')
     const [isAttacking, setIsAttacking] = useState(false)
     const [isMoving, setIsMoving] = useState(false)
-    const [isPlayersTurn, setIsPlayersTurn] = useState(true)
+    const [turnOrder, setTurnOrder] = useState(getUnitNames([...currentLevel.players, ...currentLevel.enemies]))
+    const [currentTurn, setCurrentTurn] = useState(0)
     const [status, setStatus] = useState('Time to fight!')
     const [hasWon, setHasWon] = useState(false)
+
+    useEffect(() => {
+        setTurnOrder(getUnitNames([...currentLevel.players, ...currentLevel.enemies]))
+        setCurrentTurn(0)
+    }, [currentLevel])
 
     const generateCoords = useCallback((x, y) => {
         let isCellTaken = false
@@ -35,11 +44,12 @@ export const Battle = (props) => {
     }, [gridSize, enemies])
 
     const handleReset = () => {
-        setPlayerCoords([0, 0])
+        setPlayers(currentLevel.players)
         setEnemies(currentLevel.enemies)
+        setTurnOrder(getUnitNames([...currentLevel.players, ...currentLevel.enemies]))
+        setCurrentTurn(0)
         setIsAttacking(false)
         setIsMoving(false)
-        setIsPlayersTurn(true)
         setStatus('Time to fight!')
         setHasWon(false)
     }
@@ -47,12 +57,13 @@ export const Battle = (props) => {
     const handleNext = () => {
         setCurrentLevel(LEVELS.levelTwo)
         setGridSize([LEVELS.levelTwo.rows, LEVELS.levelTwo.columns])
-        setPlayerCoords(LEVELS.levelTwo.playerStart)
+        setPlayers(LEVELS.levelTwo.players)
         setEnemies(LEVELS.levelTwo.enemies)
-        setIsPlayersTurn(true)
         setStatus('Time to fight!')
         setHasWon(false)
     }
+
+    const isPlayersTurn = getUnitNames(players).includes(turnOrder[currentTurn])
 
     useEffect (() => {
         if (!isPlayersTurn) {
@@ -60,16 +71,15 @@ export const Battle = (props) => {
                 if(hasWon){
                     return setStatus('You Won!')
                 }
-                return setStatus(lastEnemyHit ? `Enemy turn. ${lastEnemyHit} tries to run!` : 'Enemy turn.')
-            }, 250);
+                return setStatus(lastEnemyHit ? `${turnOrder[currentTurn]} turn. ${lastEnemyHit} tries to run!` : `${turnOrder[currentTurn]} turn.`)
+            }, 750);
             setTimeout(() => {
-                setEnemies(enemies.map((e) => lastEnemyHit === e.name && e.health > 0 ? {...e, coords: generateCoords(playerCoords[0], playerCoords[1])} : e))
+                setEnemies(enemies.map((e) => lastEnemyHit === e.name && e.health > 0 ? {...e, coords: generateCoords(players[0].coords[0], players[0].coords[1])} : e))
                 setStatus(hasWon ? 'You Won!' : 'Time to Fight!')
-                setIsPlayersTurn(true)
-            }, 500);
+                setCurrentTurn(endTurn(turnOrder, currentTurn))
+            }, 2000);
         }
-
-    }, [generateCoords, hasWon, isPlayersTurn, playerCoords, enemies, lastEnemyHit])
+    }, [generateCoords, hasWon, enemies, lastEnemyHit, players, turnOrder, currentTurn, isPlayersTurn])
 
     const checkIsAdjacent = (x, y, coords) => {
         if (coords[0] - 1 === x && coords[1] === y) return true
@@ -95,7 +105,7 @@ export const Battle = (props) => {
                     return {...e, health: enemy.health - 1}
                 })
             )
-            return setIsPlayersTurn(false)
+            return setCurrentTurn(endTurn(turnOrder, currentTurn))
         }
         setEnemies(
             enemies.map((e) => {
@@ -113,16 +123,18 @@ export const Battle = (props) => {
             }
             
         }
-        // TODO: FIX HAS WON STATUS
+
         if(hasMoreEnemies)  {
-            return setIsPlayersTurn(false)
+            setTurnOrder(turnOrder.filter((name) => name !== enemy.name))
+            return setCurrentTurn(endTurn(turnOrder.filter((name) => name !== enemy.name), currentTurn))
         }
         setHasWon(true)
-        return setIsPlayersTurn(false) 
+        setTurnOrder(turnOrder.filter((name) => name !== enemy.name))
+        return setCurrentTurn(endTurn(turnOrder.filter((name) => name !== enemy.name), currentTurn)) 
     }
 
     const placePlayer = (x, y) => {
-        return (x === playerCoords[0] && y === playerCoords[1]) ? (<div style={styles.player} />
+        return (x === players[0].coords[0] && y === players[0].coords[1]) ? (<div style={styles.player}>{`${players[0].name.charAt(0)}`}</div>
                 ) : null
         }
         
@@ -148,7 +160,7 @@ export const Battle = (props) => {
         let cells = []
 
         for (let i = 0; i < x; i++) {
-            const isAdjacent = checkIsAdjacent(i, y, playerCoords)
+            const isAdjacent = checkIsAdjacent(i, y, players[0].coords)
             let cellBackgroundStyles = 'cell'
             if (isMoving) cellBackgroundStyles = 'cell moveable'
             if (isAttacking && isAdjacent) cellBackgroundStyles = 'cell targetable'
@@ -159,7 +171,7 @@ export const Battle = (props) => {
                 if (isMoving) {
                     setStatus('Time to Fight!')
                     setIsMoving(false)
-                    return setPlayerCoords([x, y])
+                    return setPlayers([{...players[0], coords: [x, y]}])
                 }
                 if (isAttacking && !isAdjacent) return setStatus('You cannot reach.')
                 if (isAttacking && isAdjacent) {
@@ -233,7 +245,7 @@ export const Battle = (props) => {
             <h2>{status}</h2>
             {enemyHealthDisplay()}
             {<button disabled={!isPlayersTurn} onClick={() => handleReset()}>Reset</button>}
-            {hasWon ? <button onClick={() => handleNext()}>Next Level</button> : null}
+            {hasWon && currentLevel !== LEVELS.levelTwo ? <button onClick={() => handleNext()}>Next Level</button> : null}
         </div>
     )
 

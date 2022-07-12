@@ -1,8 +1,16 @@
+const playerName = localStorage.getItem('currentPlayer')
+
 export const LEVELS = {
     levelOne: {
         rows: 5,
         columns: 5,
-        playerStart: [0, 0],
+        players:[
+            {
+                coords: [0, 0],
+                health: 10,
+                name: playerName
+            }
+        ],
         enemies:[
             {
                 coords: [4, 4],
@@ -12,13 +20,19 @@ export const LEVELS = {
         ],
     },
     levelTwo: {
-        rows: 10,
-        columns: 7,
-        playerStart: [1, 1],
+        rows: 6,
+        columns: 6,
+        players:[
+            {
+                coords: [1, 1],
+                health: 10,
+                name: playerName
+            }
+        ],
         enemies:[
             {
-                coords: [6, 6],
-                health: 3,
+                coords: [5, 5],
+                health: 1,
                 name: 'Frank'
             },
             {
