@@ -3,7 +3,7 @@ import './Battle.css'
 
 import { LEVELS } from '../../constants/levels'
 
-import { endTurn } from '../../utils/battle'
+import { endTurn, findOpenMelee } from '../../utils/battle'
 import { getUnitNames } from '../../utils/units'
 
 export const Battle = (props) => {
@@ -70,15 +70,24 @@ export const Battle = (props) => {
                 if(hasWon){
                     return setStatus('You Won!')
                 }
+                if(turnOrder[currentTurn] === 'Sally') {
+                    return setStatus('Sally turn. She bout to fuck you up!')
+                }
                 return setStatus(`${turnOrder[currentTurn]} turn. They runnin'`)
             }, 750);
             setTimeout(() => {
-                setEnemies(enemies.map((e) => turnOrder[currentTurn] === e.name ? {...e, coords: generateCoords(players[0].coords[0], players[0].coords[1])} : e))
+                if (turnOrder[currentTurn] === 'Sally') {
+                    setEnemies(enemies.map((e) => turnOrder[currentTurn] === e.name ? {...e, coords: findOpenMelee(players[0], players, enemies, gridSize[0], gridSize[1]) ?? e.coords} : e))
+                    setPlayers([{...players[0], health: players[0].health - 1}])
+                } else {
+                    
+                    setEnemies(enemies.map((e) => turnOrder[currentTurn] === e.name ? {...e, coords: generateCoords(players[0].coords[0], players[0].coords[1])} : e))
+                }
                 setStatus(hasWon ? 'You Won!' : 'Time to Fight!')
                 setCurrentTurn(endTurn(turnOrder, currentTurn))
             }, 2000);
         }
-    }, [generateCoords, hasWon, enemies, players, turnOrder, currentTurn, isPlayersTurn])
+    }, [generateCoords, hasWon, enemies, players, turnOrder, currentTurn, isPlayersTurn, gridSize])
 
     const checkIsAdjacent = (x, y, coords) => {
         if (coords[0] - 1 === x && coords[1] === y) return true
@@ -212,6 +221,13 @@ export const Battle = (props) => {
             {enemies.map((enemy) => <div key={enemy.name}>{`${enemy.name}: ${enemy.health}`}</div>)}
         </div>
     )
+    
+    const playerHealthDisplay = () => (
+        <div>
+            <h3>Player Health:</h3>
+            {players.map((player) => <div key={player.name}>{`${player.name}: ${player.health}`}</div>)}
+        </div>
+    )
 
     return (
         <div>
@@ -240,6 +256,7 @@ export const Battle = (props) => {
 
             <h2>{status}</h2>
             {enemyHealthDisplay()}
+            {playerHealthDisplay()}
             {<button disabled={!isPlayersTurn} onClick={() => handleReset()}>Reset</button>}
             {hasWon && currentLevel !== LEVELS.levelTwo ? <button onClick={() => handleNext()}>Next Level</button> : null}
         </div>
