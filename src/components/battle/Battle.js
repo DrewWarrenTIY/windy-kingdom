@@ -12,7 +12,6 @@ export const Battle = (props) => {
     const [gridSize, setGridSize] = useState([currentLevel.rows, currentLevel.columns])
     const [players, setPlayers] = useState(currentLevel.players)
     const [enemies, setEnemies] = useState(currentLevel.enemies)
-    const [lastEnemyHit, setLastEnemyHit] = useState('')
     const [isAttacking, setIsAttacking] = useState(false)
     const [isMoving, setIsMoving] = useState(false)
     const [turnOrder, setTurnOrder] = useState(getUnitNames([...currentLevel.players, ...currentLevel.enemies]))
@@ -71,15 +70,15 @@ export const Battle = (props) => {
                 if(hasWon){
                     return setStatus('You Won!')
                 }
-                return setStatus(lastEnemyHit ? `${turnOrder[currentTurn]} turn. ${lastEnemyHit} tries to run!` : `${turnOrder[currentTurn]} turn.`)
+                return setStatus(`${turnOrder[currentTurn]} turn. They runnin'`)
             }, 750);
             setTimeout(() => {
-                setEnemies(enemies.map((e) => lastEnemyHit === e.name && e.health > 0 ? {...e, coords: generateCoords(players[0].coords[0], players[0].coords[1])} : e))
+                setEnemies(enemies.map((e) => turnOrder[currentTurn] === e.name ? {...e, coords: generateCoords(players[0].coords[0], players[0].coords[1])} : e))
                 setStatus(hasWon ? 'You Won!' : 'Time to Fight!')
                 setCurrentTurn(endTurn(turnOrder, currentTurn))
             }, 2000);
         }
-    }, [generateCoords, hasWon, enemies, lastEnemyHit, players, turnOrder, currentTurn, isPlayersTurn])
+    }, [generateCoords, hasWon, enemies, players, turnOrder, currentTurn, isPlayersTurn])
 
     const checkIsAdjacent = (x, y, coords) => {
         if (coords[0] - 1 === x && coords[1] === y) return true
@@ -92,7 +91,6 @@ export const Battle = (props) => {
 
     const hitEnemy = (enemy) => {
         let hasMoreEnemies = false
-        setLastEnemyHit(enemy.name)
 
         setIsAttacking(false)
         if(enemy.health > 1) {
@@ -116,7 +114,6 @@ export const Battle = (props) => {
             })
         )
         setStatus(`You killed ${enemy.name}!`)
-        setLastEnemyHit('')
         for (let i = 0; i < enemies.length; i++) {
             if(enemies[i].health > 0 && enemies[i].name !== enemy.name) {
                 hasMoreEnemies = true
@@ -129,8 +126,7 @@ export const Battle = (props) => {
             return setCurrentTurn(endTurn(turnOrder.filter((name) => name !== enemy.name), currentTurn))
         }
         setHasWon(true)
-        setTurnOrder(turnOrder.filter((name) => name !== enemy.name))
-        return setCurrentTurn(endTurn(turnOrder.filter((name) => name !== enemy.name), currentTurn)) 
+        return setCurrentTurn(-1)
     }
 
     const placePlayer = (x, y) => {
