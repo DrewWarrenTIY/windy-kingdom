@@ -7,7 +7,7 @@ export const LEVELS = {
         players:[
             {
                 coords: [0, 0],
-                health: 10,
+                health: 5,
                 name: playerName
             }
         ],
@@ -25,19 +25,19 @@ export const LEVELS = {
         players:[
             {
                 coords: [1, 1],
-                health: 10,
+                health: 5,
                 name: playerName
             }
         ],
         enemies:[
             {
-                coords: [5, 5],
-                health: 1,
+                coords: [2, 4],
+                health: 2,
                 name: 'Frank'
             },
             {
                 coords: [4, 2],
-                health: 3,
+                health: 5,
                 name: 'Sally'
             }
         ]

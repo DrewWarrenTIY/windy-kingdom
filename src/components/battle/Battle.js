@@ -3,7 +3,7 @@ import './Battle.css'
 
 import { LEVELS } from '../../constants/levels'
 
-import { endTurn, findOpenMelee } from '../../utils/battle'
+import { checkIsAdjacent, endTurn, findOpenMelee } from '../../utils/battle'
 import { getUnitNames } from '../../utils/units'
 
 export const Battle = (props) => {
@@ -18,6 +18,7 @@ export const Battle = (props) => {
     const [currentTurn, setCurrentTurn] = useState(0)
     const [status, setStatus] = useState('Time to fight!')
     const [hasWon, setHasWon] = useState(false)
+    const [hasLost, setHasLost] = useState(false)
 
     useEffect(() => {
         setTurnOrder(getUnitNames([...currentLevel.players, ...currentLevel.enemies]))
@@ -51,6 +52,7 @@ export const Battle = (props) => {
         setIsMoving(false)
         setStatus('Time to fight!')
         setHasWon(false)
+        setHasLost(false)
     }
 
     const handleNext = () => {
@@ -60,6 +62,7 @@ export const Battle = (props) => {
         setEnemies(LEVELS.levelTwo.enemies)
         setStatus('Time to fight!')
         setHasWon(false)
+        setHasLost(false)
     }
 
     const isPlayersTurn = getUnitNames(players).includes(turnOrder[currentTurn])
@@ -70,33 +73,35 @@ export const Battle = (props) => {
                 if(hasWon){
                     return setStatus('You Won!')
                 }
+                if(hasLost){
+                    return setStatus('You Lost!')
+                }
                 if(turnOrder[currentTurn] === 'Sally') {
                     return setStatus('Sally turn. She bout to fuck you up!')
                 }
                 return setStatus(`${turnOrder[currentTurn]} turn. They runnin'`)
             }, 750);
             setTimeout(() => {
+                let newStatus = 'Time to Fight!'
+                if (hasWon) { newStatus = 'You Won!'}
+                if (hasLost) { newStatus = 'You Lost!'}
                 if (turnOrder[currentTurn] === 'Sally') {
-                    setEnemies(enemies.map((e) => turnOrder[currentTurn] === e.name ? {...e, coords: findOpenMelee(players[0], players, enemies, gridSize[0], gridSize[1]) ?? e.coords} : e))
-                    setPlayers([{...players[0], health: players[0].health - 1}])
+                    setEnemies(enemies.map((e) => turnOrder[currentTurn] === e.name ? {...e, coords: findOpenMelee(e, players[0], players, enemies, gridSize[0], gridSize[1]) ?? e.coords} : e))
+                    if(players[0].health === 1) {
+                        setHasLost(true)
+                        newStatus = 'You Lost!'
+                        setPlayers([{...players[0], coords: [-1, -1], health: players[0].health - 1}])
+                    } else {
+                        setPlayers([{...players[0], health: players[0].health - 1}])
+                    }
                 } else {
-                    
                     setEnemies(enemies.map((e) => turnOrder[currentTurn] === e.name ? {...e, coords: generateCoords(players[0].coords[0], players[0].coords[1])} : e))
                 }
-                setStatus(hasWon ? 'You Won!' : 'Time to Fight!')
+                setStatus(newStatus)
                 setCurrentTurn(endTurn(turnOrder, currentTurn))
             }, 2000);
         }
-    }, [generateCoords, hasWon, enemies, players, turnOrder, currentTurn, isPlayersTurn, gridSize])
-
-    const checkIsAdjacent = (x, y, coords) => {
-        if (coords[0] - 1 === x && coords[1] === y) return true
-        if (coords[0] + 1 === x && coords[1] === y) return true
-        if (coords[0] === x && coords[1] - 1 === y) return true
-        if (coords[0] === x && coords[1] + 1 === y) return true
-        
-        return false
-    }
+    }, [generateCoords, hasWon, enemies, players, turnOrder, currentTurn, isPlayersTurn, gridSize, hasLost])
 
     const hitEnemy = (enemy) => {
         let hasMoreEnemies = false
@@ -240,7 +245,7 @@ export const Battle = (props) => {
                         setStatus('Time to Fight!')
                         setIsMoving(false)
                     }}>Cancel</button>)}
-            {!hasWon && !isAttacking && !isMoving && <button disabled={!isPlayersTurn} onClick={() => {
+            {!hasWon && !isAttacking && !isMoving && <button disabled={!isPlayersTurn || hasLost} onClick={() => {
                         setStatus('Make your move.')
                         setIsMoving(true)
                     }}>Move</button>}
@@ -249,7 +254,7 @@ export const Battle = (props) => {
                         setStatus('Time to Fight!')
                         setIsAttacking(false)
                     }}>Cancel</button>)}
-            {!hasWon && !isAttacking && !isMoving && <button disabled={!isPlayersTurn} onClick={() => {
+            {!hasWon && !isAttacking && !isMoving && <button disabled={!isPlayersTurn || hasLost} onClick={() => {
                         setStatus('Take a swing.')
                         setIsAttacking(true)
                     }}>Attack</button>}

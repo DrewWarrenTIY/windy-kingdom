@@ -2,6 +2,15 @@ export const endTurn = (turnOrder, currentTurn) => {
     return currentTurn === turnOrder.length - 1 ? 0 : currentTurn + 1
 }
 
+export const checkIsAdjacent = (x, y, coords) => {
+    if (coords[0] - 1 === x && coords[1] === y) return true
+    if (coords[0] + 1 === x && coords[1] === y) return true
+    if (coords[0] === x && coords[1] - 1 === y) return true
+    if (coords[0] === x && coords[1] + 1 === y) return true
+    
+    return false
+}
+
 export const isMovableTile = (x, y, players, enemies, rows, columns) => {
     if ( x < 0 || x >= rows) return false
     if ( y < 0 || y >= columns) return false
@@ -23,24 +32,25 @@ export const isMovableTile = (x, y, players, enemies, rows, columns) => {
     return isVacant
 }
 
-export const findOpenMelee = (target, players, enemies, rows, columns) => {
-    let x = target.coords[0]
-    let y = target.coords[1]
-
-    if (isMovableTile(x, y + 1, players, enemies, rows, columns)) {
-        return [x, y + 1]
+export const findOpenMelee = (mover, target, players, enemies, rows, columns) => {
+    if(checkIsAdjacent(mover.coords[0], mover.coords[1], players[0].coords)) {
+        return mover.coords
     }
 
-    if (isMovableTile(x + 1, y, players, enemies, rows, columns)) {
-        return [x + 1, y]
+    if (isMovableTile(target.coords[0], target.coords[1] - 1, players, enemies, rows, columns)) {
+        return [target.coords[0], target.coords[1] - 1]
     }
 
-    if (isMovableTile(x, y - 1, players, enemies, rows, columns)) {
-        return [x, y - 1]
+    if (isMovableTile(target.coords[0] + 1, target.coords[1], players, enemies, rows, columns)) {
+        return [target.coords[0] + 1, target.coords[1]]
     }
 
-    if (isMovableTile(x - 1, y, players, enemies, rows, columns)) {
-        return [x - 1, y]
+    if (isMovableTile(target.coords[0], target.coords[1] + 1, players, enemies, rows, columns)) {
+        return [target.coords[0], target.coords[1] + 1]
+    }
+
+    if (isMovableTile(target.coords[0] - 1, target.coords[1], players, enemies, rows, columns)) {
+        return [target.coords[0] - 1, target.coords[1]]
     }
 
     return null
