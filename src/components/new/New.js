@@ -1,23 +1,24 @@
-import { useState, useEffect, useRef } from "react"
-import { handleNew } from './NewLogic'
+import { useState, useEffect, useRef } from "react";
+import { handleNew } from "./NewLogic";
 
 export const New = (props) => {
-    const [name, setName] = useState('');
-    const nameInput = useRef()
-    useEffect(() => {
-        nameInput.current.focus()
-    }, [])
+  const [name, setName] = useState("");
+  const nameInput = useRef();
+  useEffect(() => {
+    nameInput.current.focus();
+  }, []);
 
-    return (
-        <div>
+  return (
+    <div>
+      <h1>New</h1>
+      <button onClick={() => props.handleNav("landingPage")}>Back</button>
+      <input onChange={(e) => setName(e.target.value)} ref={nameInput} />
 
-        <h1>New</h1>
-        <button onClick={() => props.handleNav('landingPage')}>Back</button>
-        <input onChange={(e) => setName(e.target.value)} ref={nameInput}/>
+      <h2>{`Your name will be ${name}.`}</h2>
 
-        <h2>{`Your name will be ${name}.`}</h2>
-
-        <button onClick={() => handleNew(name, () => props.handleNav('battle'))}>Let's Go!</button>
-        </div>
-    )
-}
+      <button onClick={() => handleNew(name, () => props.handleNav("battle"))}>
+        Let's Go!
+      </button>
+    </div>
+  );
+};

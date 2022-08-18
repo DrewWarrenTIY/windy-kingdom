@@ -1,57 +1,100 @@
 export const endTurn = (turnOrder, currentTurn) => {
-    return currentTurn === turnOrder.length - 1 ? 0 : currentTurn + 1
-}
+  return currentTurn === turnOrder.length - 1 ? 0 : currentTurn + 1;
+};
 
 export const checkIsAdjacent = (x, y, coords) => {
-    if (coords[0] - 1 === x && coords[1] === y) return true
-    if (coords[0] + 1 === x && coords[1] === y) return true
-    if (coords[0] === x && coords[1] - 1 === y) return true
-    if (coords[0] === x && coords[1] + 1 === y) return true
+  if (coords[0] - 1 === x && coords[1] === y) return true;
+  if (coords[0] + 1 === x && coords[1] === y) return true;
+  if (coords[0] === x && coords[1] - 1 === y) return true;
+  if (coords[0] === x && coords[1] + 1 === y) return true;
 
-    return false
-}
+  return false;
+};
 
 export const isMovableTile = (x, y, players, enemies, rows, columns) => {
-    if ( x < 0 || x >= rows) return false
-    if ( y < 0 || y >= columns) return false
+  if (x < 0 || x >= rows) return false;
+  if (y < 0 || y >= columns) return false;
 
-    let isVacant = true
+  let isVacant = true;
 
-    for (let i = 0; i < players.length; i++) {
-        if (players[i].coords[0] === x && players[i].coords[1] === y) {
-            isVacant = false
-        }
+  for (let i = 0; i < players.length; i++) {
+    if (players[i].coords[0] === x && players[i].coords[1] === y) {
+      isVacant = false;
     }
+  }
 
-    for (let i = 0; i < enemies.length; i++) {
-        if (enemies[i].coords[0] === x && enemies[i].coords[1] === y) {
-            isVacant = false
-        }
+  for (let i = 0; i < enemies.length; i++) {
+    if (enemies[i].coords[0] === x && enemies[i].coords[1] === y) {
+      isVacant = false;
     }
+  }
 
-    return isVacant
-}
+  return isVacant;
+};
 
-export const findOpenMelee = (mover, target, players, enemies, rows, columns) => {
-    if(checkIsAdjacent(mover.coords[0], mover.coords[1], players[0].coords)) {
-        return mover.coords
-    }
+export const findOpenMelee = (
+  mover,
+  target,
+  players,
+  enemies,
+  rows,
+  columns
+) => {
+  if (checkIsAdjacent(mover.coords[0], mover.coords[1], players[0].coords)) {
+    return mover.coords;
+  }
 
-    if (isMovableTile(target.coords[0], target.coords[1] - 1, players, enemies, rows, columns)) {
-        return [target.coords[0], target.coords[1] - 1]
-    }
+  if (
+    isMovableTile(
+      target.coords[0],
+      target.coords[1] - 1,
+      players,
+      enemies,
+      rows,
+      columns
+    )
+  ) {
+    return [target.coords[0], target.coords[1] - 1];
+  }
 
-    if (isMovableTile(target.coords[0] + 1, target.coords[1], players, enemies, rows, columns)) {
-        return [target.coords[0] + 1, target.coords[1]]
-    }
+  if (
+    isMovableTile(
+      target.coords[0] + 1,
+      target.coords[1],
+      players,
+      enemies,
+      rows,
+      columns
+    )
+  ) {
+    return [target.coords[0] + 1, target.coords[1]];
+  }
 
-    if (isMovableTile(target.coords[0], target.coords[1] + 1, players, enemies, rows, columns)) {
-        return [target.coords[0], target.coords[1] + 1]
-    }
+  if (
+    isMovableTile(
+      target.coords[0],
+      target.coords[1] + 1,
+      players,
+      enemies,
+      rows,
+      columns
+    )
+  ) {
+    return [target.coords[0], target.coords[1] + 1];
+  }
 
-    if (isMovableTile(target.coords[0] - 1, target.coords[1], players, enemies, rows, columns)) {
-        return [target.coords[0] - 1, target.coords[1]]
-    }
+  if (
+    isMovableTile(
+      target.coords[0] - 1,
+      target.coords[1],
+      players,
+      enemies,
+      rows,
+      columns
+    )
+  ) {
+    return [target.coords[0] - 1, target.coords[1]];
+  }
 
-    return null
-}
+  return null;
+};
