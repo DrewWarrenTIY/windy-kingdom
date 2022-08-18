@@ -85,6 +85,7 @@ export const Battle = (props) => {
                 let newStatus = 'Time to Fight!'
                 if (hasWon) { newStatus = 'You Won!'}
                 if (hasLost) { newStatus = 'You Lost!'}
+                // TODO: factor enemy action to levels constants
                 if (turnOrder[currentTurn] === 'Sally') {
                     setEnemies(enemies.map((e) => turnOrder[currentTurn] === e.name ? {...e, coords: findOpenMelee(e, players[0], players, enemies, gridSize[0], gridSize[1]) ?? e.coords} : e))
                     if(players[0].health === 1) {
