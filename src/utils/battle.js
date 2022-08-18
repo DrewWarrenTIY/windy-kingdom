@@ -7,7 +7,7 @@ export const checkIsAdjacent = (x, y, coords) => {
     if (coords[0] + 1 === x && coords[1] === y) return true
     if (coords[0] === x && coords[1] - 1 === y) return true
     if (coords[0] === x && coords[1] + 1 === y) return true
-    
+
     return false
 }
 
