@@ -8,7 +8,7 @@ import { getUnitNames } from "../../utils/units";
 
 export const Battle = (props) => {
   const styles = getStyles();
-  const [currentLevel, setCurrentLevel] = useState(LEVELS.levelOne);
+  const [currentLevel, setCurrentLevel] = useState(LEVELS().levelOne);
   const [gridSize, setGridSize] = useState([
     currentLevel.rows,
     currentLevel.columns,
@@ -71,10 +71,10 @@ export const Battle = (props) => {
   };
 
   const handleNext = () => {
-    setCurrentLevel(LEVELS.levelTwo);
-    setGridSize([LEVELS.levelTwo.rows, LEVELS.levelTwo.columns]);
-    setPlayers(LEVELS.levelTwo.players);
-    setEnemies(LEVELS.levelTwo.enemies);
+    setCurrentLevel(LEVELS().levelTwo);
+    setGridSize([LEVELS().levelTwo.rows, LEVELS().levelTwo.columns]);
+    setPlayers(LEVELS().levelTwo.players);
+    setEnemies(LEVELS().levelTwo.enemies);
     setStatus("Time to fight!");
     setHasWon(false);
     setHasLost(false);
@@ -372,7 +372,7 @@ export const Battle = (props) => {
           Reset
         </button>
       }
-      {hasWon && currentLevel !== LEVELS.levelTwo ? (
+      {hasWon && currentLevel !== LEVELS().levelTwo ? (
         <button onClick={() => handleNext()}>Next Level</button>
       ) : null}
     </div>
