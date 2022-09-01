@@ -2,18 +2,14 @@ export const handleLogin = (name, next) => {
   if (!name) return window.alert("try a name, dingus");
   const names = JSON.parse(localStorage.getItem("names")) || [];
 
-  let isNameTaken = false;
+  let isNameInNames = false;
   for (let i = 0; i < names.length; i++) {
     if (names[i].toLowerCase() === name.toLowerCase()) {
-      isNameTaken = true;
+      isNameInNames = true;
     }
   }
 
-  if (isNameTaken) {
-    localStorage.setItem(
-      "names",
-      JSON.stringify([...names, name.toLowerCase()])
-    );
+  if (isNameInNames) {
     localStorage.setItem("currentPlayer", name);
     return next();
   }
