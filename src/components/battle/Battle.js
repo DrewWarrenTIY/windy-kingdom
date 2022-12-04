@@ -87,6 +87,32 @@ export const Battle = (props) => {
   const isPlayersTurn = getUnitNames(players).includes(turnOrder[currentTurn]);
 
   useEffect(() => {
+    const executeMovePattern = (unit) => {
+      if (unit.movePattern === "findOpenMelee") {
+        return findOpenMelee(
+          unit,
+          players[0],
+          players,
+          enemies,
+          gridSize[0],
+          gridSize[1]
+        );
+      }
+
+      if (unit.movePattern === "random") {
+        return generateCoords(players[0].coords[0], players[0].coords[1]);
+      }
+
+      return unit.coords;
+    };
+
+    const executeActionPattern = (unit) => {
+      if (unit?.actionPattern === "attack") {
+        return setPlayers([{ ...players[0], health: players[0].health - 1 }]);
+      }
+      return null;
+    };
+
     if (!isPlayersTurn) {
       setTimeout(() => {
         if (hasWon) {
@@ -108,55 +134,34 @@ export const Battle = (props) => {
         if (hasLost) {
           newStatus = "You Lost!";
         }
-        // TODO: factor enemy action to levels constants
-        if (turnOrder[currentTurn] === "Sally") {
-          setEnemies(
-            enemies.map((e) =>
-              turnOrder[currentTurn] === e.name
-                ? {
-                    ...e,
-                    coords:
-                      findOpenMelee(
-                        e,
-                        players[0],
-                        players,
-                        enemies,
-                        gridSize[0],
-                        gridSize[1]
-                      ) ?? e.coords,
-                  }
-                : e
-            )
-          );
-          // TODO: check win/lose between turns
-          if (players[0].health === 1) {
-            setHasLost(true);
-            newStatus = "You Lost!";
-            setPlayers([
-              {
-                ...players[0],
-                coords: [-1, -1],
-                health: players[0].health - 1,
-              },
-            ]);
-          } else {
-            setPlayers([{ ...players[0], health: players[0].health - 1 }]);
-          }
-        } else {
-          setEnemies(
-            enemies.map((e) =>
-              turnOrder[currentTurn] === e.name
-                ? {
-                    ...e,
-                    coords: generateCoords(
-                      players[0].coords[0],
-                      players[0].coords[1]
-                    ),
-                  }
-                : e
-            )
-          );
+        const actingEnemy = enemies.filter(
+          (e) => turnOrder[currentTurn] === e.name
+        );
+        setEnemies(
+          enemies.map((e) =>
+            turnOrder[currentTurn] === e.name
+              ? {
+                  ...e,
+                  coords: executeMovePattern(e),
+                }
+              : e
+          )
+        );
+
+        executeActionPattern(actingEnemy[0]);
+
+        if (players[0].health === 1) {
+          setHasLost(true);
+          newStatus = "You Lost!";
+          setPlayers([
+            {
+              ...players[0],
+              coords: [-1, -1],
+              health: players[0].health - 1,
+            },
+          ]);
         }
+
         setStatus(newStatus);
         setCurrentTurn(endTurn(turnOrder, currentTurn));
       }, 2000);

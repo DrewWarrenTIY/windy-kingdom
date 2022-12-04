@@ -99,6 +99,4 @@ export const findOpenMelee = (
   ) {
     return [target.coords[0] - 1, target.coords[1]];
   }
-
-  return null;
 };
