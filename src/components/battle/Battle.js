@@ -108,18 +108,29 @@ export const Battle = (props) => {
 
     const executeActionPattern = (unit) => {
       if (unit?.actionPattern === "attack") {
+        if (players[0].health === 1) {
+          setHasLost(true);
+          return setPlayers([
+            {
+              ...players[0],
+              coords: [-1, -1],
+              health: players[0].health - 1,
+            },
+          ]);
+        }
         return setPlayers([{ ...players[0], health: players[0].health - 1 }]);
       }
       return null;
     };
 
+    if (hasLost) {
+      return setStatus("You Lost!");
+    }
+
     if (!isPlayersTurn) {
       setTimeout(() => {
         if (hasWon) {
           return setStatus("You Won!");
-        }
-        if (hasLost) {
-          return setStatus("You Lost!");
         }
         if (turnOrder[currentTurn] === "Sally") {
           return setStatus("Sally turn. She bout to fuck you up!");
@@ -130,9 +141,6 @@ export const Battle = (props) => {
         let newStatus = "Time to Fight!";
         if (hasWon) {
           newStatus = "You Won!";
-        }
-        if (hasLost) {
-          newStatus = "You Lost!";
         }
         const actingEnemy = enemies.filter(
           (e) => turnOrder[currentTurn] === e.name
@@ -149,18 +157,6 @@ export const Battle = (props) => {
         );
 
         executeActionPattern(actingEnemy[0]);
-
-        if (players[0].health === 1) {
-          setHasLost(true);
-          newStatus = "You Lost!";
-          setPlayers([
-            {
-              ...players[0],
-              coords: [-1, -1],
-              health: players[0].health - 1,
-            },
-          ]);
-        }
 
         setStatus(newStatus);
         setCurrentTurn(endTurn(turnOrder, currentTurn));
