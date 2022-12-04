@@ -37,6 +37,7 @@ export const LEVELS = () => {
           coords: [2, 4],
           health: 2,
           name: "Frank",
+          movePattern: "random",
         },
         {
           coords: [4, 2],
