@@ -3,8 +3,12 @@ import "./Battle.css";
 
 import { LEVELS } from "../../constants/levels";
 
-import { checkIsAdjacent, endTurn, findOpenMelee } from "../../utils/battle";
-import { getUnitNames } from "../../utils/units";
+import {
+  getUnitNames,
+  checkIsAdjacent,
+  endTurn,
+  findOpenMelee,
+} from "../../utils/battle";
 
 export const Battle = (props) => {
   const styles = getStyles();
@@ -124,6 +128,7 @@ export const Battle = (props) => {
                 : e
             )
           );
+          // TODO: check win/lose between turns
           if (players[0].health === 1) {
             setHasLost(true);
             newStatus = "You Lost!";
@@ -315,7 +320,7 @@ export const Battle = (props) => {
 
   return (
     <div>
-      <h1>Battle</h1>
+      <h1>{`${currentLevel.mapName}`}</h1>
       <button onClick={() => props.handleNav("landingPage")}>Back</button>
 
       {grid(gridSize[0], gridSize[1])}

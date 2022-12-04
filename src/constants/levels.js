@@ -2,6 +2,7 @@ export const LEVELS = () => {
   const playerName = localStorage.getItem("currentPlayer");
   return {
     levelOne: {
+      mapName: "Level One",
       rows: 5,
       columns: 5,
       players: [
@@ -20,6 +21,7 @@ export const LEVELS = () => {
       ],
     },
     levelTwo: {
+      mapName: "Level Two",
       rows: 6,
       columns: 6,
       players: [

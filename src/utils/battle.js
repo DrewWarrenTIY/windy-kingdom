@@ -1,3 +1,7 @@
+export const getUnitNames = (units) => {
+  return units.map((unit) => unit.name);
+};
+
 export const endTurn = (turnOrder, currentTurn) => {
   return currentTurn === turnOrder.length - 1 ? 0 : currentTurn + 1;
 };
