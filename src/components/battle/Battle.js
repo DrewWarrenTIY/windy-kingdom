@@ -84,7 +84,7 @@ export const Battle = (props) => {
     };
 
     const executeAction = (unit) => {
-      if (unit?.action.pattern === "attack") {
+      if (unit?.action?.pattern === "attack") {
         if (players[0].health === 1) {
           setHasLost(true);
           return setPlayers([
