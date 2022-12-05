@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import "./Battle.css";
 
 import { LEVELS } from "../../constants/levels";
@@ -8,6 +8,7 @@ import {
   checkIsAdjacent,
   endTurn,
   findOpenMelee,
+  findOpenRandom,
 } from "../../utils/battle";
 
 export const Battle = (props) => {
@@ -36,30 +37,6 @@ export const Battle = (props) => {
     setCurrentTurn(0);
   }, [currentLevel]);
 
-  const generateCoords = useCallback(
-    (x, y) => {
-      let isCellTaken = false;
-      const newCoords = [];
-      newCoords.push(Math.floor(Math.random() * gridSize[0]));
-      newCoords.push(Math.floor(Math.random() * gridSize[1]));
-      for (let i = 0; i < enemies.length; i++) {
-        if (
-          newCoords[0] === enemies[i].coords[0] &&
-          newCoords[1] === enemies[i].coords[1]
-        ) {
-          isCellTaken = true;
-        }
-      }
-      if (newCoords[0] === x && newCoords[1] === y) {
-        isCellTaken = true;
-        return generateCoords(x, y);
-      }
-
-      return isCellTaken ? generateCoords(x, y) : newCoords;
-    },
-    [gridSize, enemies]
-  );
-
   const handleReset = () => {
     setPlayers(currentLevel.players);
     setEnemies(currentLevel.enemies);
@@ -87,8 +64,8 @@ export const Battle = (props) => {
   const isPlayersTurn = getUnitNames(players).includes(turnOrder[currentTurn]);
 
   useEffect(() => {
-    const executeMovePattern = (unit) => {
-      if (unit.movePattern === "findOpenMelee") {
+    const executeMove = (unit) => {
+      if (unit.move.pattern === "findOpenMelee") {
         return findOpenMelee(
           unit,
           players[0],
@@ -99,15 +76,15 @@ export const Battle = (props) => {
         );
       }
 
-      if (unit.movePattern === "random") {
-        return generateCoords(players[0].coords[0], players[0].coords[1]);
+      if (unit.move.pattern === "random") {
+        return findOpenRandom([...players, ...enemies], gridSize);
       }
 
       return unit.coords;
     };
 
-    const executeActionPattern = (unit) => {
-      if (unit?.actionPattern === "attack") {
+    const executeAction = (unit) => {
+      if (unit?.action.pattern === "attack") {
         if (players[0].health === 1) {
           setHasLost(true);
           return setPlayers([
@@ -128,42 +105,38 @@ export const Battle = (props) => {
     }
 
     if (!isPlayersTurn) {
+      const actingEnemy = enemies.filter(
+        (e) => turnOrder[currentTurn] === e.name
+      )[0];
       setTimeout(() => {
         if (hasWon) {
           return setStatus("You Won!");
         }
-        if (turnOrder[currentTurn] === "Sally") {
-          return setStatus("Sally turn. She bout to fuck you up!");
-        }
-        return setStatus(`${turnOrder[currentTurn]} turn. They runnin'`);
+        return setStatus(actingEnemy.move.status);
       }, 750);
       setTimeout(() => {
         let newStatus = "Time to Fight!";
         if (hasWon) {
           newStatus = "You Won!";
         }
-        const actingEnemy = enemies.filter(
-          (e) => turnOrder[currentTurn] === e.name
-        );
         setEnemies(
           enemies.map((e) =>
             turnOrder[currentTurn] === e.name
               ? {
                   ...e,
-                  coords: executeMovePattern(e),
+                  coords: executeMove(e),
                 }
               : e
           )
         );
 
-        executeActionPattern(actingEnemy[0]);
+        executeAction(actingEnemy);
 
         setStatus(newStatus);
         setCurrentTurn(endTurn(turnOrder, currentTurn));
       }, 2000);
     }
   }, [
-    generateCoords,
     hasWon,
     enemies,
     players,
@@ -190,14 +163,7 @@ export const Battle = (props) => {
       );
       return setCurrentTurn(endTurn(turnOrder, currentTurn));
     }
-    setEnemies(
-      enemies.map((e) => {
-        if (enemy.name !== e.name) {
-          return e;
-        }
-        return { ...e, coords: [-1, -1], health: enemy.health - 1 };
-      })
-    );
+    setEnemies(enemies.filter((e) => enemy.name !== e.name));
     setStatus(`You killed ${enemy.name}!`);
     for (let i = 0; i < enemies.length; i++) {
       if (enemies[i].health > 0 && enemies[i].name !== enemy.name) {

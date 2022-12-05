@@ -36,6 +36,23 @@ export const isMovableTile = (x, y, players, enemies, rows, columns) => {
   return isVacant;
 };
 
+export const findOpenRandom = (units, gridSize) => {
+  console.log("units: ", units);
+  let isCellTaken = false;
+  const newCoords = [];
+  newCoords.push(Math.floor(Math.random() * gridSize[0]));
+  newCoords.push(Math.floor(Math.random() * gridSize[1]));
+  for (let i = 0; i < units.length; i++) {
+    if (
+      newCoords[0] === units[i].coords[0] &&
+      newCoords[1] === units[i].coords[1]
+    ) {
+      isCellTaken = true;
+    }
+  }
+  return isCellTaken ? findOpenRandom(units, gridSize) : newCoords;
+};
+
 export const findOpenMelee = (
   mover,
   target,

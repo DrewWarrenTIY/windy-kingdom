@@ -17,7 +17,10 @@ export const LEVELS = () => {
           coords: [4, 4],
           health: 3,
           name: "Ben",
-          movePattern: "random",
+          move: {
+            pattern: "random",
+            status: "Ben staggers around, drunk.",
+          },
         },
       ],
     },
@@ -37,14 +40,22 @@ export const LEVELS = () => {
           coords: [2, 4],
           health: 2,
           name: "Frank",
-          movePattern: "random",
+          move: {
+            pattern: "random",
+            status: "Frank runs for his life.",
+          },
         },
         {
           coords: [4, 2],
           health: 5,
           name: "Sally",
-          movePattern: "findOpenMelee",
-          actionPattern: "attack",
+          move: {
+            pattern: "findOpenMelee",
+            status: "Sally eyes you hungrily.",
+          },
+          action: {
+            pattern: "attack",
+          },
         },
       ],
     },
