@@ -97,6 +97,11 @@ export const LEVELS = () => {
             pattern: "lastEnemyAlive",
             status: true,
           },
+          styles: {
+            backgroundColor: "purple",
+            width: 20,
+            height: 20,
+          },
         },
         {
           coords: [1, 1],
@@ -108,7 +113,7 @@ export const LEVELS = () => {
           },
           action: {
             pattern: "attack",
-            status: "Henchman kicks your dick.",
+            status: "Henchman kicks you in the groin.",
           },
         },
         {

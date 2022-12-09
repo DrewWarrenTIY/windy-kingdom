@@ -238,7 +238,9 @@ export const Battle = (props) => {
   const placeEnemy = (x, y) => {
     let enemy = checkForEnemy(x, y);
     return enemy ? (
-      <div style={styles.enemy}>{enemy.name.charAt(0)}</div>
+      <div style={{ ...styles.enemy, ...enemy.styles }}>
+        {enemy.name.charAt(0)}
+      </div>
     ) : null;
   };
 
@@ -380,7 +382,7 @@ export const Battle = (props) => {
             Reset
           </button>
 
-          {hasWon && (
+          {hasWon && currentLevel.id !== 3 && (
             <button
               disabled={!isPlayersTurn}
               onClick={() => handleNextLevel(currentLevel)}
