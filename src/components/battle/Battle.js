@@ -106,6 +106,8 @@ export const Battle = (props) => {
       return setStatus("You Lost!");
     }
 
+    // TODO: Allow action and move to happen separately without re-triggering effect
+
     if (!isPlayersTurn) {
       const actingEnemy = enemies.filter(
         (e) => turnOrder[currentTurn] === e.name
@@ -161,7 +163,6 @@ export const Battle = (props) => {
   ]);
 
   const hitEnemy = (enemy) => {
-    // TODO: Boss Mechanics
     let lastEnemyAlive = false;
     let hasMoreEnemies = false;
 
