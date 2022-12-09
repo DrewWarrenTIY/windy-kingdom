@@ -37,7 +37,6 @@ export const isMovableTile = (x, y, players, enemies, rows, columns) => {
 };
 
 export const findOpenRandom = (units, gridSize) => {
-  console.log("units: ", units);
   let isCellTaken = false;
   const newCoords = [];
   newCoords.push(Math.floor(Math.random() * gridSize[0]));

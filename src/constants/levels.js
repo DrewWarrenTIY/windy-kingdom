@@ -2,7 +2,8 @@ export const LEVELS = () => {
   const playerName = localStorage.getItem("currentPlayer");
   return {
     levelOne: {
-      mapName: "Level One",
+      id: 1,
+      mapName: "Easy Peasy",
       rows: 5,
       columns: 5,
       players: [
@@ -21,11 +22,15 @@ export const LEVELS = () => {
             pattern: "random",
             status: "Ben staggers around, drunk.",
           },
+          action: {
+            status: "Ben pees a little.",
+          },
         },
       ],
     },
     levelTwo: {
-      mapName: "Level Two",
+      id: 2,
+      mapName: "Winnable",
       rows: 6,
       columns: 6,
       players: [
@@ -44,6 +49,9 @@ export const LEVELS = () => {
             pattern: "random",
             status: "Frank runs for his life.",
           },
+          action: {
+            status: "Frank shakes in his boots.",
+          },
         },
         {
           coords: [4, 2],
@@ -55,6 +63,65 @@ export const LEVELS = () => {
           },
           action: {
             pattern: "attack",
+            status: "Sally bites you. Really hard.",
+          },
+        },
+      ],
+    },
+    levelThree: {
+      id: 3,
+      mapName: "Boss Fight",
+      rows: 5,
+      columns: 5,
+      players: [
+        {
+          coords: [2, 4],
+          health: 9,
+          name: playerName,
+        },
+      ],
+      enemies: [
+        {
+          coords: [2, 0],
+          health: 1,
+          name: "Boss",
+          move: {
+            pattern: null,
+            status: "The Boss stands and laughs.",
+          },
+          action: {
+            pattern: "attack",
+            status: "The Boss starts blasting.",
+          },
+          invulnerable: {
+            pattern: "lastEnemyAlive",
+            status: true,
+          },
+        },
+        {
+          coords: [1, 1],
+          health: 2,
+          name: "Henchman",
+          move: {
+            pattern: "findOpenMelee",
+            status: "Henchman positions aggressively.",
+          },
+          action: {
+            pattern: "attack",
+            status: "Henchman kicks your dick.",
+          },
+        },
+        {
+          coords: [3, 1],
+          health: 2,
+          name: "Minion",
+          move: {
+            pattern: "findOpenMelee",
+            status: "Minion bucks up.",
+          },
+          action: {
+            pattern: "attack",
+            status: "Minion punches you in the mouth.",
           },
         },
       ],
