@@ -51,11 +51,13 @@ export const Battle = (props) => {
     setHasLost(false);
   };
 
-  const handleNext = () => {
-    setCurrentLevel(LEVELS().levelTwo);
-    setGridSize([LEVELS().levelTwo.rows, LEVELS().levelTwo.columns]);
-    setPlayers(LEVELS().levelTwo.players);
-    setEnemies(LEVELS().levelTwo.enemies);
+  const handleNextLevel = (currentLevel) => {
+    const nextLevel =
+      currentLevel.id === 2 ? LEVELS().levelThree : LEVELS().levelTwo;
+    setCurrentLevel(nextLevel);
+    setGridSize([nextLevel.rows, nextLevel.columns]);
+    setPlayers(nextLevel.players);
+    setEnemies(nextLevel.enemies);
     setStatus("Time to fight!");
     setHasWon(false);
     setHasLost(false);
@@ -114,11 +116,19 @@ export const Battle = (props) => {
         }
         return setStatus(actingEnemy.move.status);
       }, 750);
+
       setTimeout(() => {
-        let newStatus = "Time to Fight!";
         if (hasWon) {
-          newStatus = "You Won!";
+          return null;
         }
+        return setStatus(actingEnemy?.action?.status);
+      }, 2000);
+
+      setTimeout(() => {
+        if (hasWon) {
+          setStatus("You Won!");
+        }
+
         setEnemies(
           enemies.map((e) =>
             turnOrder[currentTurn] === e.name
@@ -132,9 +142,12 @@ export const Battle = (props) => {
 
         executeAction(actingEnemy);
 
-        setStatus(newStatus);
         setCurrentTurn(endTurn(turnOrder, currentTurn));
-      }, 2000);
+      }, 3000);
+    } else {
+      if (!hasWon) {
+        setStatus("Time to fight!");
+      }
     }
   }, [
     hasWon,
@@ -148,9 +161,17 @@ export const Battle = (props) => {
   ]);
 
   const hitEnemy = (enemy) => {
+    // TODO: Boss Mechanics
+    let lastEnemyAlive = false;
     let hasMoreEnemies = false;
 
     setIsAttacking(false);
+
+    if (enemy.invulnerable?.status) {
+      setStatus(`Your attack does not affect ${enemy.name}!`);
+      return setCurrentTurn(endTurn(turnOrder, currentTurn));
+    }
+
     if (enemy.health > 1) {
       setStatus(`You hit ${enemy.name}!`);
       setEnemies(
@@ -163,13 +184,26 @@ export const Battle = (props) => {
       );
       return setCurrentTurn(endTurn(turnOrder, currentTurn));
     }
-    setEnemies(enemies.filter((e) => enemy.name !== e.name));
-    setStatus(`You killed ${enemy.name}!`);
-    for (let i = 0; i < enemies.length; i++) {
-      if (enemies[i].health > 0 && enemies[i].name !== enemy.name) {
-        hasMoreEnemies = true;
-      }
+
+    const newEnemies = enemies.filter((e) => enemy.name !== e.name);
+
+    if (newEnemies.length === 1) lastEnemyAlive = true;
+    if (newEnemies.length > 0) hasMoreEnemies = true;
+
+    if (
+      lastEnemyAlive &&
+      newEnemies[0].invulnerable?.pattern === "lastEnemyAlive"
+    ) {
+      setEnemies([
+        {
+          ...newEnemies[0],
+          invulnerable: { pattern: "lastEnemyAlive", status: false },
+        },
+      ]);
+    } else {
+      setEnemies(newEnemies);
     }
+    setStatus(`You killed ${enemy.name}!`);
 
     if (hasMoreEnemies) {
       setTurnOrder(turnOrder.filter((name) => name !== enemy.name));
@@ -339,13 +373,21 @@ export const Battle = (props) => {
       <h2>{status}</h2>
       {enemyHealthDisplay()}
       {playerHealthDisplay()}
-      {
-        <button disabled={!isPlayersTurn} onClick={() => handleReset()}>
-          Reset
-        </button>
-      }
-      {hasWon && currentLevel !== LEVELS().levelTwo ? (
-        <button onClick={() => handleNext()}>Next Level</button>
+      {isPlayersTurn ? (
+        <>
+          <button disabled={!isPlayersTurn} onClick={() => handleReset()}>
+            Reset
+          </button>
+
+          {hasWon && (
+            <button
+              disabled={!isPlayersTurn}
+              onClick={() => handleNextLevel(currentLevel)}
+            >
+              Next Level
+            </button>
+          )}
+        </>
       ) : null}
     </div>
   );
