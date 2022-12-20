@@ -325,7 +325,7 @@ export const Battle = (props) => {
   return (
     <div>
       <h1>{`${currentLevel.mapName}`}</h1>
-      <button onClick={() => props.handleNav("landingPage")}>Back</button>
+      <button onClick={() => props.handleNav("worldMap")}>Back</button>
 
       {grid(gridSize[0], gridSize[1])}
 

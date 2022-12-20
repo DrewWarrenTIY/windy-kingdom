@@ -1,9 +1,11 @@
+import { useState } from "react";
 import "./App.css";
+
+import { Battle } from "./components/battle/Battle";
 import { LandingPage } from "./components/landingpage/LandingPage";
 import { Login } from "./components/login/Login";
 import { New } from "./components/new/New";
-import { Battle } from "./components/battle/Battle";
-import { useState } from "react";
+import { WorldMap } from "./components/worldmap/WorldMap";
 
 function App() {
   const [screen, setScreen] = useState("landingPage");
@@ -17,6 +19,8 @@ function App() {
         return <Login handleNav={nav} />;
       case "new":
         return <New handleNav={nav} />;
+      case "worldMap":
+        return <WorldMap handleNav={nav} />;
       case "battle":
         return <Battle handleNav={nav} />;
       default:
