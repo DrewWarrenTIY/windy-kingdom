@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/windy-kingdom/static/css/main.889b434d.css",
-    "main.js": "/windy-kingdom/static/js/main.656aea0d.js",
+    "main.js": "/windy-kingdom/static/js/main.02a796bc.js",
     "static/js/787.e20ec77e.chunk.js": "/windy-kingdom/static/js/787.e20ec77e.chunk.js",
     "index.html": "/windy-kingdom/index.html",
     "main.889b434d.css.map": "/windy-kingdom/static/css/main.889b434d.css.map",
-    "main.656aea0d.js.map": "/windy-kingdom/static/js/main.656aea0d.js.map",
+    "main.02a796bc.js.map": "/windy-kingdom/static/js/main.02a796bc.js.map",
     "787.e20ec77e.chunk.js.map": "/windy-kingdom/static/js/787.e20ec77e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.889b434d.css",
-    "static/js/main.656aea0d.js"
+    "static/js/main.02a796bc.js"
   ]
 }
