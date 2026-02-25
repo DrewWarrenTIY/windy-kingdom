@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 
+import { LevelProvider } from "./context/LevelContext";
+
 import { Battle } from "./components/battle/Battle";
 import { LandingPage } from "./components/landingpage/LandingPage";
 import { Login } from "./components/login/Login";
@@ -28,7 +30,11 @@ function App() {
     }
   };
 
-  return <div className="App">{currentScreen()}</div>;
+  return (
+    <LevelProvider>
+      <div className="App">{currentScreen()}</div>
+    </LevelProvider>
+  );
 }
 
 export default App;

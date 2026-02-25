@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./Battle.css";
 
+import { LevelContext } from "../../context/LevelContext";
 import { LEVELS } from "../../constants/levels";
 
 import {
@@ -13,7 +14,8 @@ import {
 
 export const Battle = (props) => {
   const styles = getStyles();
-  const [currentLevel, setCurrentLevel] = useState(LEVELS().levelOne);
+  const { currentLevel } = useContext(LevelContext);
+  const { setCurrentLevel } = useContext(LevelContext);
   const [gridSize, setGridSize] = useState([
     currentLevel.rows,
     currentLevel.columns,
